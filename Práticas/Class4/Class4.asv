@@ -19,15 +19,49 @@ subplot(122);
 imagesc(im);
 hold on
 plot(pi(1,:), pi(2,:), 'g.')
-indices = zeros(size(di,2), 1);
-for i = 1:size(di,2)
-    
-    indices(i,:) = NNeighbour(di(:,i), dt);
-    
-end
 
+load('indices.mat')
+
+match_temp = [pt(1,indices); pt(2,indices)];
+
+random_indices = datasample(1:size(pi,2),4);
+figure 
+subplot(121);
+imagesc(im);
+hold on
+plot(pi(1,random_indices(1)), pi(2,random_indices(1)), 'r.')
+hold on
+plot(pi(1,random_indices(1)), pi(2,random_indices(1)), 'g.')
+hold on
+plot(pi(1,random_indices(1)), pi(2,random_indices(1)), 'b.')
+hold on
+plot(pi(1,random_indices(1)), pi(2,random_indices(1)), 'y.')
+subplot(122);
+imagesc(tm);
+hold on
+plot(match_temp(1,random_indices(1)), match_temp(2,random_indices(1)), 'r.')
+hold on
+plot(match_temp(1,random_indices(1)), match_temp(2,random_indices(1)), 'g.')
+hold on
+plot(match_temp(1,random_indices(1)), match_temp(2,random_indices(1)), 'b.')
+hold on
+plot(match_temp(1,random_indices(1)), match_temp(2,random_indices(1)), 'y.')
+
+
+% indices = zeros(size(di,2), 1);
+
+% tic;
+% for i = 1:size(di,2)
+%     indices(i,:) = NNeighbour(di(:,i), dt);
+% end
+% save('indices.mat','indices')
+% toc
+% % see if there are repeated values
+% if length(indices) ~= length(unique(indices))
+%     1
+% end
 function index_of_matching_p = NNeighbour(di_point, dt)
     norm = vecnorm(di_point-dt);
     index_of_matching_p = find(norm == min(norm));
-    index_of_matching_p = index_of_matching_p(1);
+    index_of_matching_p =  datasample(index_of_matching_p,1);
 end
