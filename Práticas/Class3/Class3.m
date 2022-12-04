@@ -56,7 +56,7 @@ P = Projective_mat(p2, xyz1);
 
 
 intrinsics=cameraIntrinsics([Krgb(1,1) Krgb(2,2)],[Krgb(1,3) Krgb(2,3)],[480 640]);
-[R,T]=estimateWorldCameraPose(p2,xyz1,intrinsics,'MaxReprojectionError',20)
+[R,T]=estimateWorldCameraPose(p2,xyz1,intrinsics,'MaxReprojectionError',20);
 % [Q,R_1] = qr(P(1:3,1:3));
 
 % R_2 = Q';
