@@ -3,7 +3,7 @@ function [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points
     for i = 1:num_iter
         rand_ind = datasample(1:size(im_points,2),4);
         H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
-        inliers = find(distance(im_points, temp_points, H)<900);
+        inliers = find(distance(im_points, temp_points, H)<10);
 
         if size(inliers,2) > size(best_inliers,2)
             i
@@ -17,22 +17,20 @@ function [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points
     temp_points = temp_points(:,best_inliers);
     best_homography = homography(im_points, temp_points);
 end
-
+% ver porque é que nao tenho sempre um mínimo de 4 inliers
 function H = homography(im_points,temp_points)
-    X = [temp_points',ones(size(temp_points',1),1)];
-    im_points = im_points';
-    M = zeros(2*size(temp_points',1),9);
-    for i = 1:size(temp_points',1)
+    X = [im_points',ones(size(im_points',1),1)];
+    M = zeros(2*size(im_points',1),9);
+    for i = 1:size(im_points',1)
         M(2*i-1,1:3) = X(i,:);
         M(2*i,4:6) = X(i,:);
         M(2*i-1,7:9) = X(i,:);
         M(2*i,7:9) = X(i,:);
     end
-    M(:,7:9) = M(:,7:9).*-repmat(im_points(:), 1, 3);
-%     [V,~] = svd(M'*M);
-    [~,~,V] = svd(M);
-    H = reshape(V(:,end),[3 3])/V(end,end);
-
+    M(:,7:9) = M(:,7:9).*-repmat(temp_points(:), 1, 3);
+    [~,~,V] = svd(M'*M);
+    H = reshape(V(:,end),[3 3])'/V(end,end);
+ 
 end
 
 function dist = distance(p_im, p_temp, H)
