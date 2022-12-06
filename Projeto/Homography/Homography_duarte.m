@@ -29,13 +29,12 @@ switch calculate
         load('indices0014.mat')
         % indices_sorted = indices;
 
-        indices_sorted = sortrows(indices,[2 3]);
         % [~,id] = unique(indices_sorted(:,2));
 
         % indices_sorted = indices_sorted(id,:);
 
-        temp_points = [pt(1,indices_sorted(:,2)); pt(2,indices_sorted(:,2))];
-        im_points = [pi(1,indices_sorted(:,1)); pi(2,indices_sorted(:,1))];
+        temp_points = [pt(1,indices(:,2)); pt(2,indices(:,2))];
+        im_points = [pi(1,indices(:,1)); pi(2,indices(:,1))];
 
         tic;
         [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points, 0.5, 10000);
@@ -73,10 +72,14 @@ switch calculate
         imagesc(im);
         hold on
         plot(im_points(1,:), im_points(2,:), 'g.')
-
-        imOut = imwarp(im,projective2d(best_homography'));
+%         sameAsInput = affineOutputView(size(im),affine2d(best_homography'),"BoundsStyle","SameAsInput");
+        [imOut,RA] = imwarp(im,projective2d(best_homography'));
         figure
         imshow(imOut)
+%         figure
+%         imshow(tm)
+        tform = randomAffine2d("Scale",[1.2, 2.4]);
+        
     case 2
         indices = zeros(size(di,2), 3);
         indices(:,1) = [1:size(di,2)]';

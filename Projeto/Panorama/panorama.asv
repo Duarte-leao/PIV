@@ -36,7 +36,7 @@ p2 = round(p2);
 p3 = round(p3);
 
 
-calculate = 1; % 1 - homography; 2 - matches
+calculate = 2; % 1 - homography; 2 - matches
 
 switch calculate
     case 1
@@ -131,8 +131,8 @@ switch calculate
 
     case 2
         
-        di = d1;
-%         di = d3;
+%         di = d1;
+        di = d3;
         dt = d2;
         indices = zeros(size(di,2), 2);
         indices(:,1) = [1:size(di,2)]';
