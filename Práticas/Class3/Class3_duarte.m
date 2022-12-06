@@ -57,14 +57,14 @@ P = Projective_mat(p2, xyz1);
 
 intrinsics=cameraIntrinsics([Krgb(1,1) Krgb(2,2)],[Krgb(1,3) Krgb(2,3)],[480 640]);
 [R,T]=estimateWorldCameraPose(p2,xyz1,intrinsics,'MaxReprojectionError',20);
-% [Q,R_1] = qr(P(1:3,1:3));
-
-% R_2 = Q';
-% T_2 = R_1*P(1:3,4)
-R_1 = Krgb\P(1:3,1:3)
-T_1 = Krgb\P(1:3,4)
+[Q,R_1] = qr(P(1:3,1:3)\eye(3));
+% 
+R_2 = Q';
+T_2 = R_1*P(1:3,4);
+% R_1 = Krgb'\P(1:3,1:3)
+% T_1 = Krgb'\P(1:3,4)
 % R_1 = (P(1:3,1:3)\Krgb)'
-% % R_1 = inv(P(1:3,1:3)\Krgb)
+% R_1 = inv(P(1:3,1:3)\Krgb)
 % T_1 = Krgb\P(1:3,4)
 
 % showPointCloud(pc);hold on;
@@ -77,13 +77,15 @@ function P = Projective_mat(p,xyz)
     X = [xyz,ones(size(xyz,1),1)];
     p = p';
     M = zeros(2*size(xyz,1),12);
-    for i = 1:6
+    for i = 1:size(xyz,1)
         M(2*i-1,1:4) = X(i,:);
         M(2*i,5:8) = X(i,:);
         M(2*i-1,9:12) = X(i,:);
         M(2*i,9:12) = X(i,:);
     end
-    M(:,9:12) = M(:,9:12).*repmat(p(:), 1, 4);
-    [V,~] = svd(M'*M);
+    M(:,9:12) = M(:,9:12).*-repmat(p(:), 1, 4);
+%     [V,~] = svd(M'*M);
+    [~,~,V] = svd(M);
     P = reshape(V(:,12),[3 4])/V(12,12);
+%     P = reshape(V(:,12),[3 4]);
 end
