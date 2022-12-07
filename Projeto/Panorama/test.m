@@ -1,3 +1,6 @@
+%%%%% ver se consigo transpor a homography apenas no final
+
+
 clear all
 % close 
 %% Code

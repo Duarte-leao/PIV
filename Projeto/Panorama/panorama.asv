@@ -9,12 +9,12 @@ im_3 = imread('im3.jpeg');
 load('im1.mat')
 load('im2.mat')
 load('im3.mat')
-% img_1=rgb2gray(im_3);
-% points = detectSURFFeatures(img_1, 'MetricThreshold', 20);
-% [im_1_features, p_im1] = extractFeatures(img_1, points);
-% p3 = p_im1.Location';
-% d3 = im_1_features';
-% save('im3.mat','d3','p3')
+img_1=rgb2gray(im_1);
+points = detectSURFFeatures(img_1, 'NumOctaves', 4, 'MetricThreshold', 20);
+[im_1_features, p_im1] = extractFeatures(img_1, points);
+p1 = p_im1.Location';
+d1 = im_1_features';
+save('im1.mat','d4','p4')
 
 % figure 
 % subplot(131);
@@ -36,7 +36,7 @@ p2 = round(p2);
 p3 = round(p3);
 
 
-calculate = 2; % 1 - homography; 2 - matches
+calculate = 1    ; % 1 - homography; 2 - matches
 
 switch calculate
     case 1
@@ -53,7 +53,7 @@ switch calculate
         im_points = [pi(1,indices(:,1)); pi(2,indices(:,1))];
 
         tic;
-        [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points, 0.5, 10000);
+        [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points, 0.5, 20000);
         toc
 
         random_indices = datasample(1:size(im_points,2),4);

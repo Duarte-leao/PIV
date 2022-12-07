@@ -3,7 +3,7 @@ function [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points
     for i = 1:num_iter
         rand_ind = datasample(1:size(im_points,2),4);
         H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
-        inliers = find(distance(im_points, temp_points, H)<10);
+        inliers = find(distance(im_points, temp_points, H)<5);
 
         if size(inliers,2) > size(best_inliers,2)
             i

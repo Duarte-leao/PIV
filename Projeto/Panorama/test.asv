@@ -3,15 +3,15 @@ clear all
 %% Code
 
 % Load images.
-% buildingDir = fullfile(toolboxdir('vision'),'visiondata','building');
-% imgs = imageDatastore(buildingDir);
+buildingDir = fullfile(toolboxdir('vision'),'visiondata','building');
+buildingScene = imageDatastore(buildingDir);
 
-imgs = imageDatastore(["im1.jpeg"; "im2.jpeg"; "im3.jpeg"]);
+imds = imageDatastore(["im1.jpeg";"im2.jpeg"]);
 % Display images to be stitched.
-montage(imgs.Files)
+% montage(buildingScene.Files)
 
 % Read the first image from the image set.
-I = readimage(imgs,1);
+I = readimage(buildingScene,1);
 
 % Initialize features for I(1)
 grayImage = im2gray(I);
@@ -22,7 +22,7 @@ points = detectSURFFeatures(grayImage, 'MetricThreshold', 300);
 % projective transformation is used here because the building images are fairly
 % close to the camera. For scenes captured from a further distance, you can use
 % affine transformations.
-numImages = numel(imgs.Files);
+numImages = numel(buildingScene.Files);
 tforms(numImages) = projective2d;
 
 % Initialize variable to hold image sizes.
@@ -35,7 +35,7 @@ for n = 2:numImages
     featuresPrevious = features;
         
     % Read I(n).
-    I = readimage(imgs, n);
+    I = readimage(buildingScene, n);
     
     % Convert image to grayscale.
     grayImage = im2gray(I);    
@@ -107,7 +107,7 @@ panoramaView = imref2d([height width], xLimits, yLimits);
 % Create the panorama.
 for i = 1:numImages
     
-    I = readimage(imgs, i);   
+    I = readimage(buildingScene, i);   
    
     % Transform I into the panorama.
     warpedImage = imwarp(I, tforms(i), 'OutputView', panoramaView);

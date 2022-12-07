@@ -3,26 +3,26 @@ clear all
 %% Code
 
 % Load images.
-% buildingDir = fullfile(toolboxdir('vision'),'visiondata','building');
-% imgs = imageDatastore(buildingDir);
+buildingDir = fullfile(toolboxdir('vision'),'visiondata','building');
+buildingScene = imageDatastore(buildingDir);
 
-imgs = imageDatastore(["im1.jpeg"; "im2.jpeg"; "im3.jpeg"]);
 % Display images to be stitched.
-montage(imgs.Files)
+
+% montage(buildingScene.Files)
 
 % Read the first image from the image set.
-I = readimage(imgs,1);
+I = readimage(buildingScene,1);
 
 % Initialize features for I(1)
 grayImage = im2gray(I);
-points = detectSURFFeatures(grayImage, 'MetricThreshold', 300);
+points = detectSURFFeatures(grayImage);
 [features, points] = extractFeatures(grayImage,points);
 
 % Initialize all the transformations to the identity matrix. Note that the
 % projective transformation is used here because the building images are fairly
 % close to the camera. For scenes captured from a further distance, you can use
 % affine transformations.
-numImages = numel(imgs.Files);
+numImages = numel(buildingScene.Files);
 tforms(numImages) = projective2d;
 
 % Initialize variable to hold image sizes.
@@ -35,7 +35,7 @@ for n = 2:numImages
     featuresPrevious = features;
         
     % Read I(n).
-    I = readimage(imgs, n);
+    I = readimage(buildingScene, n);
     
     % Convert image to grayscale.
     grayImage = im2gray(I);    
@@ -44,21 +44,21 @@ for n = 2:numImages
     imageSize(n,:) = size(grayImage);
     
     % Detect and extract SURF features for I(n).
-    points = detectSURFFeatures(grayImage, 'MetricThreshold', 300);    
+    points = detectSURFFeatures(grayImage);    
     [features, points] = extractFeatures(grayImage, points);
   
     % Find correspondences between I(n) and I(n-1).
-    indexPairs = NNeighbour(features', featuresPrevious');
-
-    
-    matchedPoints = points.Location(indexPairs(:,1), :)';
-    matchedPointsPrev = pointsPrevious.Location(indexPairs(:,2), :)';        
+    indexPairs = matchFeatures(features, featuresPrevious, 'Unique', true);
+       
+    matchedPoints = points(indexPairs(:,1), :);
+    matchedPointsPrev = pointsPrevious(indexPairs(:,2), :);        
     
     % Estimate the transformation between I(n) and I(n-1).
-    [tforms(n),~,~] = RANSAC(matchedPoints, matchedPointsPrev, 0.5, 10000);
+    tforms(n) = estimateGeometricTransform2D(matchedPoints, matchedPointsPrev,...
+        'projective', 'Confidence', 99.9, 'MaxNumTrials', 2000);
     
     % Compute T(1) * T(2) * ... * T(n-1) * T(n).
-    tforms(n).T = tforms(n-1).T * tforms(n).T'; 
+    tforms(n).T = tforms(n-1).T * tforms(n).T; 
 end
 
 % Compute the output limits for each transformation.
@@ -107,7 +107,7 @@ panoramaView = imref2d([height width], xLimits, yLimits);
 % Create the panorama.
 for i = 1:numImages
     
-    I = readimage(imgs, i);   
+    I = readimage(buildingScene, i);   
    
     % Transform I into the panorama.
     warpedImage = imwarp(I, tforms(i), 'OutputView', panoramaView);
@@ -121,14 +121,3 @@ end
 
 figure
 imshow(panorama)
-
-
-function [index_of_matching_p] = NNeighbour(di, dt)
-    len = min(size(di,2), size(dt,2));
-    index_of_matching_p = zeros(len, 2);
-    index_of_matching_p(:,1) = [1:len]';
-    for i = 1:len
-        norm = vecnorm(di(:,i)-dt);
-        index_of_matching_p(i,2) =  datasample(find(norm == min(norm)),1);
-    end
-end
