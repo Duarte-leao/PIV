@@ -1,10 +1,10 @@
 %%%%% ver se consigo transpor a homography apenas no final
 
 
-clear all
-% close 
+clear 
+close all
 %% Code
-
+tic;
 % Load images.
 % buildingDir = fullfile(toolboxdir('vision'),'visiondata','building');
 % imgs = imageDatastore(buildingDir);
@@ -58,7 +58,8 @@ for n = 2:numImages
     matchedPointsPrev = pointsPrevious.Location(indexPairs(:,2), :)';        
     
     % Estimate the transformation between I(n) and I(n-1).
-    [tforms(n),~,~] = RANSAC(matchedPoints, matchedPointsPrev, 0.5, 10000);
+    K = ceil(log(1-0.99)/log(1-0.2^4));
+    [tforms(n),~,~] = RANSAC(matchedPoints, matchedPointsPrev, 0.5, K);
     
     % Compute T(1) * T(2) * ... * T(n-1) * T(n).
     tforms(n).T = tforms(n-1).T * tforms(n).T'; 
@@ -124,7 +125,7 @@ end
 
 figure
 imshow(panorama)
-
+toc
 
 function [index_of_matching_p] = NNeighbour(di, dt)
     len = min(size(di,2), size(dt,2));
