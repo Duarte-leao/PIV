@@ -74,12 +74,11 @@ p2 = p2.T
 p1 = p1.T
 
 matching = NNeighbour(d1,d2)
-print(matching)
+#print(matching)
 
-
-
-''' Sanity check '''
-sanity = []
+### Sanity check ###
+# Thiis only makes sense after aplying RANSAC
+'''sanity = []
 for i in range(4):
     sanity.append(matching[i + random.randint(100,4000)])
 sanity = np.array(sanity)
@@ -91,7 +90,7 @@ axes[1].imshow(template)
 for i in range(4):
     axes[0].scatter(p2[int(sanity[i,0]),0] , p2[int(sanity[i,0]),1], s = 1)
     axes[1].scatter(p1[int(sanity[i,1]),0],p1[int(sanity[i,1]),1], s = 1)   
-plt.show()
+plt.show()'''
 
 ################## 3 - RANSAC ##################
 
