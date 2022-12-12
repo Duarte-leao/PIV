@@ -2,30 +2,31 @@ close all
 clear
 
 %% Code
-% load('rgb0001.mat')
+load('rgb0001.mat')
 load('rgb0014.mat')
 pi = p;
 di = d;
 load('templateSNS.mat')
 pt = p;
 dt = d;
-% im = imread('rgb0001.jpg');
+im = imread('rgb0001.jpg');
 im = imread('rgb0014.jpg');
 tm = imread('templateSNS.jpg');
-% figure 
-% subplot(121);
-% imagesc(tm);
-% hold on
-% plot(pt(1,:), pt(2,:), 'r.')
-% subplot(122);
-% imagesc(im);
-% hold on
-% plot(pi(1,:), pi(2,:), 'g.')
+figure 
+subplot(121);
+imagesc(tm);
+hold on
+plot(pt(1,:), pt(2,:), 'r.')
+subplot(122);
+imagesc(im);
+hold on
+plot(pi(1,:), pi(2,:), 'g.')
+
 calculate = 1; % 1 - homography; 2 - matches
 
 switch calculate
     case 1
-%         load('indices0001.mat')
+        load('indices0001.mat')
         load('indices0014.mat')
         % indices_sorted = indices;
 
@@ -72,13 +73,11 @@ switch calculate
         imagesc(im);
         hold on
         plot(im_points(1,:), im_points(2,:), 'g.')
-%         sameAsInput = affineOutputView(size(im),affine2d(best_homography'),"BoundsStyle","SameAsInput");
-        [imOut,RA] = imwarp(im,projective2d(best_homography'));
+        
+        imOut = imwarp(im,projective2d(best_homography'));
         figure
         imshow(imOut)
-%         figure
-%         imshow(tm)
-        tform = randomAffine2d("Scale",[1.2, 2.4]);
+
         
     case 2
         indices = zeros(size(di,2), 3);
@@ -87,7 +86,7 @@ switch calculate
         for i = 1:size(di,2)
             [indices(i,2), indices(i,3)] = NNeighbour(di(:,i), dt);
         end
-%         save('indices0001.mat','indices')
+        save('indices0001.mat','indices')
         save('indices0014.mat','indices')
         toc
 end
