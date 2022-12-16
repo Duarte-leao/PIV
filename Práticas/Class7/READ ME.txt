@@ -1,0 +1,6 @@
+*bgim.m*
+is the professor file with the solution implemented
+
+*sol_francisco.m* 
+is the file where different solutions were attempted sequentially until the final solution is achieved.
+This was done for comparison purposes.
