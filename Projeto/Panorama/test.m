@@ -9,7 +9,9 @@ tic;
 % buildingDir = fullfile(toolboxdir('vision'),'visiondata','building');
 % imgs = imageDatastore(buildingDir);
 
-imgs = imageDatastore(["im1.jpeg"; "im2.jpeg"; "im3.jpeg"]);
+% imgs = imageDatastore(["D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im1.jpeg"; "D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im2.jpeg"; "D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im3.jpeg"]);
+% imgs = imageDatastore(["D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im2.jpeg"; "D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im3.jpeg"]);
+imgs = imageDatastore("D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\","FileExtensions",".jpeg");
 % Display images to be stitched.
 montage(imgs.Files)
 

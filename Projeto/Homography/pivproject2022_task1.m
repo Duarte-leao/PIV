@@ -36,9 +36,11 @@ function pivproject2022_task1(path_to_template, path_to_input_folder, path_to_ou
         di = d;
         fprintf(1, 'Now reading %s\n', input_baseFileName);
         indexPairs = NNeighbour(di,dt);
+%         save('index_pairs.mat','indexPairs')
         temp_points = [pt(1,indexPairs(:,2)); pt(2,indexPairs(:,2))];
         im_points = [pi(1,indexPairs(:,1)); pi(2,indexPairs(:,1))];
-        H = RANSAC(im_points,temp_points, 0.5, 5000);
+%         H = RANSAC(im_points,temp_points, 0.5, 10000);
+        [H, im_points,temp_points] = RANSAC(im_points,temp_points, 0.5, 1000);
         save(strcat(output_folder, strcat('\H_', input_baseFileName(end-7:end))),'H')
         
         imOut = imwarp(image,projective2d(H'));
@@ -58,13 +60,34 @@ function [index_of_matching_p] = NNeighbour(di, dt)
     end
 end
 
-function [best_homography] = RANSAC(im_points,temp_points, threshold, num_iter)
+% function [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points, threshold, num_iter)
+%     best_inliers = [0 0];
+%     for i = 1:num_iter
+%         rand_ind = datasample(1:size(im_points,2),4);
+%         H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
+%         inliers = find(distance(im_points, temp_points, H)<5);
+% 
+%         if size(inliers,2) > size(best_inliers,2)
+%             i
+%             best_inliers = inliers;
+%             if size(best_inliers,2) > size(im_points,2)*threshold
+%                break 
+%             end
+%         end
+%     end
+%     im_points = im_points(:,best_inliers);
+%     temp_points = temp_points(:,best_inliers);
+%     best_homography = homography(im_points, temp_points);
+% end
+
+function [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points, threshold, num_iter)
     best_inliers = [0 0];
-    for i = 1:num_iter
+    i=1;
+    while size(best_inliers,2) < size(im_points,2)*.015
         rand_ind = datasample(1:size(im_points,2),4);
         H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
-        inliers = find(distance(im_points, temp_points, H)<2);
-
+        inliers = find(distance(im_points, temp_points, H)<5);
+        i = i + 1;
         if size(inliers,2) > size(best_inliers,2)
             i
             best_inliers = inliers;
