@@ -1,16 +1,16 @@
 close all
-clear
+% clear
 
 %% Code
 load('rgb0001.mat')
-load('rgb0014.mat')
+% load('rgb0014.mat')
 pi = p;
 di = d;
 load('templateSNS.mat')
 pt = p;
 dt = d;
 im = imread('rgb0001.jpg');
-im = imread('rgb0014.jpg');
+% im = imread('rgb0014.jpg');
 tm = imread('templateSNS.jpg');
 figure 
 subplot(121);
@@ -27,7 +27,7 @@ calculate = 1; % 1 - homography; 2 - matches
 switch calculate
     case 1
         load('indices0001.mat')
-        load('indices0014.mat')
+%         load('indices0014.mat')
         % indices_sorted = indices;
 
         % [~,id] = unique(indices_sorted(:,2));
