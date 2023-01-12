@@ -4,19 +4,19 @@
 
 %% Code
 %load('input/rgb0001.mat')
-%load('input/rgb0014.mat')
-load('input/Quarto/1.mat')
-pi = p';
-di = des';
-%load('template/templateSNS.mat')
-load('input/Quarto/2.mat')
-pt = p';
-dt = des';
+load('input/rgb0014.mat')
+%load('input/Quarto/1.mat')
+pi = p;
+di = d;
+load('template/templateSNS.mat')
+% load('input/Quarto/2.mat')
+pt = p;
+dt = d;
 %im = imread('input/rgb0001.jpg');
-%im = imread('input/rgb0014.jpg');
-im = imread('input/Quarto/1.jpg');
-%tm = imread('template/templateSNS.jpg');
-tm = imread('input/Quarto/2.jpg');
+im = imread('input/rgb0014.jpg');
+% im = imread('input/Quarto/1.jpg');
+tm = imread('template/templateSNS.jpg');
+% tm = imread('input/Quarto/2.jpg');
 
 figure 
 subplot(121);

@@ -41,7 +41,10 @@ function pivproject2022_task1(varargin)
     template_fullFileName = fullfile(Template_sift.folder, template_baseFileName);
     load(template_fullFileName);
     pt = p;
-    dt = d;    
+    dt = d;
+    means_antes_antes = [];
+    means_antes = [];
+    means_depois = [];
     for k = 1 : length(Input_sift)
         image_fullFileName = fullfile(images(k).folder, images(k).name);
         image = imread(image_fullFileName);
@@ -56,14 +59,36 @@ function pivproject2022_task1(varargin)
         temp_points = [pt(1,indexPairs(:,2)); pt(2,indexPairs(:,2))];
         im_points = [pi(1,indexPairs(:,1)); pi(2,indexPairs(:,1))];
 %         H = RANSAC(im_points,temp_points, 0.5, 10000);
-        H = RANSAC(im_points,temp_points, 0.5, 1000);
+        [H, im_points,temp_points, h_best] = RANSAC(im_points,temp_points, 0.5, 10000);
 %         save(strcat(output_dir, strcat('\H_', input_baseFileName(end-7:end))),'H')
+        error0 = cost_function(h_best, im_points, temp_points);
+        error1 = cost_function(H, im_points, temp_points);
+        final_homography = Homography_LS(h_best, im_points,temp_points);
+        error2 = cost_function(final_homography, im_points, temp_points);
+        
+           
+        mean_antes_antes = [means_antes_antes mean(error0)]
+        means_antes = [means_antes mean(error1)]
+        means_depois = [means_depois mean(error2)]
+        
+        imOut = imwarp(image,projective2d(h_best'));
+        figure;
+        imshow(imOut)
         
         imOut = imwarp(image,projective2d(H'));
         figure;
         imshow(imOut)
         
+        imOut = imwarp(image,projective2d(final_homography'));
+        figure;
+        imshow(imOut)
+        
     end
+    figure(69)
+    plot(means_antes)
+    hold on
+    plot(means_depois)
+    legend("Antes", "Depois")
 end
 
 function [index_of_matching_p] = NNeighbour(di, dt)
@@ -76,13 +101,35 @@ function [index_of_matching_p] = NNeighbour(di, dt)
     end
 end
 
-% function [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points, threshold, num_iter)
+function [best_homography, im_points,temp_points, h_best] = RANSAC(im_points,temp_points, threshold, num_iter)
+    best_inliers = [0 0];
+    for i = 1:num_iter
+        rand_ind = datasample(1:size(im_points,2),4);
+        H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
+        inliers = find(distance(im_points, temp_points, H)<5);
+
+        if size(inliers,2) > size(best_inliers,2)
+            i
+            best_inliers = inliers;
+            h_best = H;
+            if size(best_inliers,2) > size(im_points,2)*threshold
+               break 
+            end
+        end
+    end
+    im_points = im_points(:,best_inliers);
+    temp_points = temp_points(:,best_inliers);
+    best_homography = homography(im_points, temp_points);
+end
+
+% function [best_homography] = RANSAC(im_points,temp_points, threshold, num_iter)
 %     best_inliers = [0 0];
-%     for i = 1:num_iter
+%     i=1;
+%     while size(best_inliers,2) < size(im_points,2)*0.025
 %         rand_ind = datasample(1:size(im_points,2),4);
 %         H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
 %         inliers = find(distance(im_points, temp_points, H)<5);
-% 
+%         i = i + 1;
 %         if size(inliers,2) > size(best_inliers,2)
 %             i
 %             best_inliers = inliers;
@@ -95,27 +142,6 @@ end
 %     temp_points = temp_points(:,best_inliers);
 %     best_homography = homography(im_points, temp_points);
 % end
-
-function [best_homography] = RANSAC(im_points,temp_points, threshold, num_iter)
-    best_inliers = [0 0];
-    i=1;
-    while size(best_inliers,2) < size(im_points,2)*0.025
-        rand_ind = datasample(1:size(im_points,2),4);
-        H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
-        inliers = find(distance(im_points, temp_points, H)<5);
-        i = i + 1;
-        if size(inliers,2) > size(best_inliers,2)
-            i
-            best_inliers = inliers;
-            if size(best_inliers,2) > size(im_points,2)*threshold
-               break 
-            end
-        end
-    end
-    im_points = im_points(:,best_inliers);
-    temp_points = temp_points(:,best_inliers);
-    best_homography = homography(im_points, temp_points);
-end
 
 function H = homography(im_points,temp_points)
     X = [im_points',ones(size(im_points',1),1)];
