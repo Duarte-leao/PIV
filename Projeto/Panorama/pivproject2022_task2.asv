@@ -1,6 +1,10 @@
 function pivproject2022_task2(ref_image, path_to_input_folder, path_to_output_folder)
     % Specify the folder where the files live.
 %     myFolder = 'D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Homography\images';
+    args = argv();
+    ref_image = args{1}; 
+    input_dir = args{2};
+    output_dir = args{3};
     
     ref_image = ref_image;
     input_folder = path_to_input_folder;
@@ -40,8 +44,8 @@ function pivproject2022_task2(ref_image, path_to_input_folder, path_to_output_fo
         
         % Find correspondences between I(k) and I(k-1).
         indexPairs = NNeighbour(features, featuresPrevious);
-
-
+        ##### verificar no NN se estou a fazer match pelo vector que tem menos numeros ou ent removo duplicados
+        
         matchedPoints = points(indexPairs(:,1), :);
         matchedPointsPrev = pointsPrevious(indexPairs(:,2), :);        
         
@@ -65,11 +69,11 @@ function [index_of_matching_p] = NNeighbour(di, dt)
             index_of_matching_p(i,2) =  datasample(find(norm == min(norm)),1);
         end
     else
-        len = min(size(di,2), size(dt,2));
+        len = min(size(di,1), size(dt,1));
         index_of_matching_p = zeros(len, 2);
         index_of_matching_p(:,1) = [1:len]';
         for i = 1:len
-            norm = vecnorm(di(:,i)-dt);
+            norm = vecnorm(di(i,:)'-dt');
             index_of_matching_p(i,2) =  datasample(find(norm == min(norm)),1);
         end
     end

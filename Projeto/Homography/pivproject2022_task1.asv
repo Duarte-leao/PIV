@@ -1,24 +1,11 @@
-function pivproject2022_task1(varargin)
-    p = inputParser;
-    addRequired(p,'template_dir',@ischar);
-    addRequired(p,'input_dir',@ischar);
-    addRequired(p,'output_dir',@ischar);
-    parse(p,varargin{:});
-    template_dir = p.Results.template_dir;
-    input_dir = p.Results.input_dir;
-    output_dir = p.Results.output_dir;
-
+function pivproject2022_task1()
     % Specify the folder where the files live.
 %     myFolder = 'D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Homography\images';
-%     args = argv();
-%     template_dir = "D:/IST/MEEC/4º Ano/P2/PIV/Projeto/Homography/template"; 
-%     input_dir = "D:/IST/MEEC/4º Ano/P2/PIV/Projeto/Homography/input";
-%     output_dir = "D:/IST/MEEC/4º Ano/P2/PIV/Projeto/Homography/output";
 
-%     args = argv();
-%     template_dir = args{1}; 
-%     input_dir = args{2};
-%     output_dir = args{3};
+    args = argv();
+    template_dir = args{1}; 
+    input_dir = args{2};
+    output_dir = args{3};
 
 %     % Check to make sure that folder actually exists.  Warn user if it doesn't.
 %     if ~isfolder(input_folder)
@@ -99,7 +86,7 @@ end
 function [best_homography] = RANSAC(im_points,temp_points, threshold, num_iter)
     best_inliers = [0 0];
     i=1;
-    while size(best_inliers,2) < size(im_points,2)*0.025
+    while size(best_inliers,2) < size(im_points,2)*0.015
         rand_ind = datasample(1:size(im_points,2),4);
         H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
         inliers = find(distance(im_points, temp_points, H)<5);

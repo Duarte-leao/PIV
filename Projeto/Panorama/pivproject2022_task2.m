@@ -1,18 +1,22 @@
 function pivproject2022_task2(ref_image, path_to_input_folder, path_to_output_folder)
     % Specify the folder where the files live.
 %     myFolder = 'D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Homography\images';
+%     args = argv();
+%     ref_image = args{1}; 
+%     input_dir = args{2};
+%     output_dir = args{3};
     
     ref_image = ref_image;
-    input_folder = path_to_input_folder;
-    output_folder =  path_to_output_folder;
+    input_dir = path_to_input_folder;
+    output_dir =  path_to_output_folder;
     % Get a list of all files in the folder with the desired file name pattern.
     
-    input_filePattern = fullfile(input_folder, '*.mat'); % Change to whatever pattern you need.
+    input_filePattern = fullfile(input_dir, '*.mat'); % Change to whatever pattern you need.
     Input_sift = dir(input_filePattern);
-    images_filePattern = fullfile(input_folder, '*.jpg');
+    images_filePattern = fullfile(input_dir, '*.jpg');
     images = dir(images_filePattern);
     
-    imgs = imageDatastore(input_folder, "FileExtensions", ".jpg");
+    imgs = imageDatastore(input_dir, "FileExtensions", ".jpg");
 
     numImages = numel(imgs.Files);
     tforms(numImages) = projective2d;
