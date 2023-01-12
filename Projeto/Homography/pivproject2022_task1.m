@@ -1,9 +1,25 @@
-function pivproject2022_task1(path_to_template, path_to_input_folder, path_to_output_folder)
+function pivproject2022_task1(varargin)
+    p = inputParser;
+    addRequired(p,'template_dir',@ischar);
+    addRequired(p,'input_dir',@ischar);
+    addRequired(p,'output_dir',@ischar);
+    parse(p,varargin{:});
+    template_dir = p.Results.template_dir;
+    input_dir = p.Results.input_dir;
+    output_dir = p.Results.output_dir;
+
     % Specify the folder where the files live.
 %     myFolder = 'D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Homography\images';
-    Template = path_to_template;
-    input_folder = path_to_input_folder;
-    output_folder =  path_to_output_folder;
+%     args = argv();
+%     template_dir = "D:/IST/MEEC/4º Ano/P2/PIV/Projeto/Homography/template"; 
+%     input_dir = "D:/IST/MEEC/4º Ano/P2/PIV/Projeto/Homography/input";
+%     output_dir = "D:/IST/MEEC/4º Ano/P2/PIV/Projeto/Homography/output";
+
+%     args = argv();
+%     template_dir = args{1}; 
+%     input_dir = args{2};
+%     output_dir = args{3};
+
 %     % Check to make sure that folder actually exists.  Warn user if it doesn't.
 %     if ~isfolder(input_folder)
 %         errorMessage = sprintf('Error: The following folder does not exist:\n%s\nPlease specify a new folder.', input_folder);
@@ -15,11 +31,11 @@ function pivproject2022_task1(path_to_template, path_to_input_folder, path_to_ou
 %         end
 %     end
     % Get a list of all files in the folder with the desired file name pattern.
-    template_filePattern = fullfile(Template, '*.mat'); % Change to whatever pattern you need.
+    template_filePattern = fullfile(template_dir, '*.mat'); % Change to whatever pattern you need.
     Template_sift = dir(template_filePattern);
-    input_filePattern = fullfile(input_folder, '*.mat'); % Change to whatever pattern you need.
+    input_filePattern = fullfile(input_dir, '*.mat'); % Change to whatever pattern you need.
     Input_sift = dir(input_filePattern);
-    images_filePattern = fullfile(input_folder, '*.jpg');
+    images_filePattern = fullfile(input_dir, '*.jpg');
     images = dir(images_filePattern);
     template_baseFileName = Template_sift.name;
     template_fullFileName = fullfile(Template_sift.folder, template_baseFileName);
@@ -40,8 +56,8 @@ function pivproject2022_task1(path_to_template, path_to_input_folder, path_to_ou
         temp_points = [pt(1,indexPairs(:,2)); pt(2,indexPairs(:,2))];
         im_points = [pi(1,indexPairs(:,1)); pi(2,indexPairs(:,1))];
 %         H = RANSAC(im_points,temp_points, 0.5, 10000);
-        [H, im_points,temp_points] = RANSAC(im_points,temp_points, 0.5, 1000);
-        save(strcat(output_folder, strcat('\H_', input_baseFileName(end-7:end))),'H')
+        H = RANSAC(im_points,temp_points, 0.5, 1000);
+        save(strcat(output_dir, strcat('\H_', input_baseFileName(end-7:end))),'H')
         
         imOut = imwarp(image,projective2d(H'));
         figure;
@@ -80,10 +96,10 @@ end
 %     best_homography = homography(im_points, temp_points);
 % end
 
-function [best_homography, im_points,temp_points] = RANSAC(im_points,temp_points, threshold, num_iter)
+function [best_homography] = RANSAC(im_points,temp_points, threshold, num_iter)
     best_inliers = [0 0];
     i=1;
-    while size(best_inliers,2) < size(im_points,2)*.015
+    while size(best_inliers,2) < size(im_points,2)*0.025
         rand_ind = datasample(1:size(im_points,2),4);
         H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
         inliers = find(distance(im_points, temp_points, H)<5);

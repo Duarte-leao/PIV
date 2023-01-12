@@ -14,6 +14,7 @@ imgs = imageDatastore("C:\Users\franc\Documents\Faculdade\5Ano\PIV\repo\Projeto\
 montage(imgs.Files)
 
 % Read the first image from the image set.
+
 I = readimage(imgs,1);
 
 % Initialize features for I(1)
