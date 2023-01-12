@@ -1,6 +1,4 @@
 %%%%% ver se consigo transpor a homography apenas no final
-
-
 clear 
 close all
 %% Code
@@ -11,7 +9,7 @@ tic;
 
 % imgs = imageDatastore(["D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im1.jpeg"; "D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im2.jpeg"; "D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im3.jpeg"]);
 % imgs = imageDatastore(["D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im2.jpeg"; "D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\im3.jpeg"]);
-imgs = imageDatastore("D:\IST\MEEC\4º Ano\P2\PIV\Projeto\Panorama\input\","FileExtensions",".jpeg");
+imgs = imageDatastore("C:\Users\franc\Documents\Faculdade\5Ano\PIV\repo\Projeto\Panorama\input\","FileExtensions",".jpeg");
 % Display images to be stitched.
 montage(imgs.Files)
 
