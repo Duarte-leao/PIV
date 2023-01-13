@@ -55,6 +55,10 @@ function pivproject2022_task1(varargin)
         di = d;
         fprintf(1, 'Now reading %s\n', input_baseFileName);
         indexPairs = NNeighbour(di,dt);
+        
+        %[indexPairs, ~] = knnsearch(dt',di', 'K', 1);
+        %indexPairs = [(1:size(indexPairs))',indexPairs];
+        
 %         save('index_pairs.mat','indexPairs')
         temp_points = [pt(1,indexPairs(:,2)); pt(2,indexPairs(:,2))];
         im_points = [pi(1,indexPairs(:,1)); pi(2,indexPairs(:,1))];
@@ -103,15 +107,21 @@ end
 
 function [best_homography, im_points,temp_points, h_best] = RANSAC(im_points,temp_points, threshold, num_iter)
     best_inliers = [0 0];
+    bestMedian=inf;
     for i = 1:num_iter
         rand_ind = datasample(1:size(im_points,2),4);
         H = homography(im_points(:,rand_ind), temp_points(:,rand_ind));
         inliers = find(distance(im_points, temp_points, H)<5);
-
-        if size(inliers,2) > size(best_inliers,2)
+        error = cost_function(H,im_points,temp_points);
+        error = sort(error);
+        median_error = error(round(size(error,2)/2));
+        
+        if median_error < bestMedian
             i
-            best_inliers = inliers;
+            bestMedian = median_error;
             h_best = H;
+            best_inliers = inliers;
+            
             if size(best_inliers,2) > size(im_points,2)*threshold
                break 
             end
